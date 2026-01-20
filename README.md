@@ -1,7 +1,7 @@
-# VRS – Morse encoder/decoder over nRF24L01+ (STM32) + LCD 16×2
+# VRS – Morse encoder/decoder
 
 Semestrálny projekt z predmetu **VRS (Vnorené riadiace systémy)**.  
-Cieľom je preniesť správu zadanú v Morseovej abecede z jednej STM32 dosky (TX) na druhú (RX) cez **nRF24L01+ (2.4 GHz)** a na prijímači ju **dekódovať** a zobraziť na **LCD 16×2**.
+Cieľom je preniesť správu zadanú v Morseovej abecede z jednej STM32 dosky (TX) na druhú (RX) cez **RFM22 Wireless shield** a na prijímači ju **dekódovať** a zobraziť na **TFT 240xRGBx320** displeji.
 
 ---
 
