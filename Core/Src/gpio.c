@@ -20,6 +20,7 @@
 
 /* Includes ------------------------------------------------------------------*/
 #include "gpio.h"
+#include "rfm22_board.h"   // ADD
 
 /* USER CODE BEGIN 0 */
 
@@ -49,7 +50,24 @@ void MX_GPIO_Init(void)
   GPIO_InitStruct.Pull = GPIO_PULLUP;
   HAL_GPIO_Init(GPIOB, &GPIO_InitStruct);
 
+  // ---- RFM22 pins ----
+  // NSEL/CS output
+  GPIO_InitStruct.Pin = RFM22_NSEL_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_OUTPUT_PP;
+  GPIO_InitStruct.Pull = GPIO_NOPULL;
+  GPIO_InitStruct.Speed = GPIO_SPEED_FREQ_HIGH;
+  HAL_GPIO_Init(RFM22_NSEL_GPIO_Port, &GPIO_InitStruct);
+  HAL_GPIO_WritePin(RFM22_NSEL_GPIO_Port, RFM22_NSEL_Pin, GPIO_PIN_SET); // deselect
+
+
+  // nIRQ input (optional)
+  GPIO_InitStruct.Pin = RFM22_nIRQ_Pin;
+  GPIO_InitStruct.Mode = GPIO_MODE_INPUT;          // neskôr môžeš dať EXTI
+  GPIO_InitStruct.Pull = GPIO_PULLUP;
+  HAL_GPIO_Init(RFM22_nIRQ_GPIO_Port, &GPIO_InitStruct);
 }
+
+
 
 /* USER CODE BEGIN 2 */
 

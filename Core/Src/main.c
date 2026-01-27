@@ -20,6 +20,8 @@
 #include "main.h"
 #include "usart.h"
 #include "gpio.h"
+#include "spi.h"       // ADD
+#include "link.h"      // ADD
 
 /* Private includes ----------------------------------------------------------*/
 /* USER CODE BEGIN Includes */
@@ -88,9 +90,11 @@ int main(void)
   /* Initialize all configured peripherals */
   MX_GPIO_Init();
   MX_USART2_UART_Init();
-  /* USER CODE BEGIN 2 */
-  app_tx_init();
-  /* USER CODE END 2 */
+
+  MX_SPI1_Init();      // ADD
+
+  app_tx_init();   // tu sa zavolá log_init(&huart2)
+  link_init();     // až potom init rádia (už bude log fungovať)
 
   /* Infinite loop */
   /* USER CODE BEGIN WHILE */

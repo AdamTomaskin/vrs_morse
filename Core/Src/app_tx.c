@@ -4,7 +4,8 @@
 #include "morse_input.h"
 #include <string.h>
 #include "morse_decode.h"
-
+#include "link.h"  // ADD
+#include "rfm22.h"
 #ifndef BTN_GPIO_Port
 #define BTN_GPIO_Port GPIOB
 #endif
@@ -52,6 +53,37 @@ void app_tx_task(void)
 {
     uint32_t now = HAL_GetTick();
 
+    // DEBUG: každé 2 sekundy pošli dlhý token stream cez LINK (test chunkingu)
+    static uint32_t last = 0;
+    if (now - last >= 2000) {
+        last = now;
+
+        uint8_t toks[200];
+        uint16_t n = 0;
+
+        // vyrob dlhú "správu" z tokenov (len na test)
+        // pattern: .-.-.- ... s občasným END_CHAR a nakoniec END_MSG
+        for (int i = 0; i < 160 && n < (sizeof(toks) - 2); i++) {
+            toks[n++] = (i & 1) ? MORSE_DOT : MORSE_DASH;
+
+            // každých 6 znakov ukonči "písmeno"
+            if ((i % 6) == 5 && n < (sizeof(toks) - 2)) {
+                toks[n++] = MORSE_END_CHAR;
+            }
+
+            // každých ~30 znakov sprav "medzeru medzi slovami"
+            if ((i % 30) == 29 && n < (sizeof(toks) - 2)) {
+                toks[n++] = MORSE_SPACE;
+            }
+        }
+
+        toks[n++] = MORSE_END_MSG;
+
+        int ok = link_send_tokens(toks, n);
+        log_printf("DBG LINK TOKENS: %s (n=%u)\r\n", ok ? "OK" : "FAIL", (unsigned)n);
+    }
+    // ---- koniec debugu ----
+
     button_update(&g_btn, now);
     morse_input_task(&g_morse, now);
 
@@ -67,5 +99,8 @@ void app_tx_task(void)
 
         log_printf("MSG TOKENS=%u  MORSE= %s  TEXT= %s\r\n", (unsigned)n, line, text);
 
+        int ok = link_send_tokens(toks, n);
+        log_printf("LINK SEND: %s\r\n", ok ? "OK" : "FAIL");
     }
+
 }
